@@ -12,7 +12,7 @@ blueprint = Blueprint('containers', __name__)
 api = Api(blueprint)
 
 
-@api.route('/<project_name>', subdomain='<username>')
+@api.route('/p/<project_name>', subdomain='<username>')
 class Containers(Resource):
     def get(self, project_name, username):
         print('Containers GET')
@@ -48,8 +48,13 @@ class Static(Resource):
             if user:
                 project = Project.query.filter(and_(Project.user_id == user.id,
                                                     Project.name == project_name)).first()
+                url = request.base_url
+                print(url)
+                if url[:2] == 'ws' and url[-2:] == 'ws':
+                    data = requests.get('http://localhost:{}/ws'.format(project.port))
+                    return Response(data, status=200)
                 if project:
-                    data = requests.get('http://localhost:{}'.format(project.port))
+                    data = requests.get('http://localhost:{}/{}'.format(project.port, dummy))
                     return Response(data, status=200)
                 else:
                     return Response('', status=404)
