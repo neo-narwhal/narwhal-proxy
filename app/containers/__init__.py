@@ -12,7 +12,7 @@ blueprint = Blueprint('containers', __name__)
 api = Api(blueprint)
 
 
-@api.route('', subdomain='<username>')
+@api.route('/', subdomain='<username>')
 class Containers(Resource):
     def get(self, username):
         print('Containers GET')
