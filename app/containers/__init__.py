@@ -27,9 +27,9 @@ class Containers(Resource):
             return Response('', status=403)
 
 
-@api.route('/*', subdomain='*')
+@api.route('/<path:dummy>', subdomain='*')
 class Static(Resource):
-    def get(self):
+    def get(self, dummy):
         referer = request.headers.get("Referer")
         if referer:
             pattern = re.compile(r'^https?://(.*)\.narwhal\.ntut\.club/(.*)$')
