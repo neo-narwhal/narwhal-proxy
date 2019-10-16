@@ -14,14 +14,10 @@ api = Api(blueprint)
 
 @api.route('/<project_name>', subdomain='<username>')
 class Containers(Resource):
-    @jwt_required
     def get(self, project_name, username):
-        claims = get_jwt_claims()
-        user_id = claims['user_id']
-
-        user = User.query.filter(User.id == user_id).first()
-        if user.username == username:
-            project = Project.query.filter(and_(Project.user_id == user_id,
+        user = User.query.filter(User.username == username).first()
+        if user:
+            project = Project.query.filter(and_(Project.user_id == user.id,
                                                 Project.name == project_name)).first()
             if project:
                 return Response(requests.get('http://localhost:{}'.format(project.port)).content, status=200)
