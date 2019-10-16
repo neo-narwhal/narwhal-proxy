@@ -18,6 +18,7 @@ class DevelopmentConfig(Config):
 
 class ProductionConfig(Config):
     DEBUG = False
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
     SERVER_NAME = 'narwhal.ntut.club'
 
 
