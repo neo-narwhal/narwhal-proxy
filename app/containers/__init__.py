@@ -50,7 +50,7 @@ class Static(Resource):
                                                     Project.name == project_name)).first()
                 url = request.base_url
                 print(url)
-                if url[:2] == 'ws' and url[-2:] == 'ws':
+                if url[-2:] == 'ws':
                     data = requests.get('http://localhost:{}/ws'.format(project.port))
                     return Response(data, status=200)
                 if project:
