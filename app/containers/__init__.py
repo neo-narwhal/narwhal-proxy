@@ -4,14 +4,30 @@ from flask_restplus import Api, Resource
 from app.model.user import User
 from ..model.project import Project
 from sqlalchemy import and_
-import re
 import requests
+import re
 
 blueprint = Blueprint('containers', __name__)
 api = Api(blueprint)
 
 
-@api.route('*', subdomain='*')
+@api.route('/<project_name>', subdomain='<username>')
+class Containers(Resource):
+    def get(self, project_name, username):
+        user = User.query.filter(User.username == username).first()
+        if user:
+            project = Project.query.filter(and_(Project.user_id == user.id,
+                                                Project.name == project_name)).first()
+            if project:
+                data = requests.get('http://localhost:{}'.format(project.port)).content()
+                return Response(data, status=200)
+            else:
+                return Response('', status=404)
+        else:
+            return Response('', status=403)
+
+
+@api.route('/*', subdomain='*')
 class Static(Resource):
     def get(self):
         referer = request.headers.get("Referer")
@@ -31,20 +47,5 @@ class Static(Resource):
                     return Response('', status=404)
             else:
                 return Response('', status=403)
-        else:
-            return Response('', status=403)
-
-@api.route('/<project_name>', subdomain='<username>')
-class Containers(Resource):
-    def get(self, project_name, username):
-        user = User.query.filter(User.username == username).first()
-        if user:
-            project = Project.query.filter(and_(Project.user_id == user.id,
-                                                Project.name == project_name)).first()
-            if project:
-                data = requests.get('http://localhost:{}'.format(project.port)).content()
-                return Response(data, status=200)
-            else:
-                return Response('', status=404)
         else:
             return Response('', status=403)
